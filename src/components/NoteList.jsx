@@ -1,18 +1,34 @@
 import React from 'react';
 
-const NoteList = ({ notes, onNoteSelect }) => { // Add onNoteSelect prop
+const NoteList = ({ notes, onNoteSelect, onDeleteNote }) => {
   return (
     <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '10px' }}>
       <h3>Note List</h3>
       {notes.length === 0 ? <p>No notes found</p> : (
-        <ul>
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
           {notes.map(note => (
             <li
               key={note.id}
-              onClick={() => onNoteSelect(note)} // Call onNoteSelect on click, passing the note
-              style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #eee' }} // Basic styling for clickable items
+              onClick={() => onNoteSelect(note)}
+              style={{
+                cursor: 'pointer',
+                padding: '5px',
+                borderBottom: '1px solid #eee',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
-              {note.title} (ID: {note.id})
+              <span>{note.title}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteNote(note.id);
+                }}
+                style={{ marginLeft: '10px' }}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
