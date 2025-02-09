@@ -1,3 +1,4 @@
+// components/CreateNoteButton.jsx
 import React from 'react';
 
 const CreateNoteButton = ({ onCreateNewNote }) => {

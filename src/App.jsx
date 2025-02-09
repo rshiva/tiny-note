@@ -16,13 +16,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const quillRef = useRef(null);
 
-  // Helper: Convert Quill Delta to plain text
-  const getPlainTextFromDelta = (delta) => {
-    if (!delta || !delta.ops) return '';
-    return delta.ops.map(op => (typeof op.insert === 'string' ? op.insert : '')).join('');
-  };
-
-  // Create a new note with default content
+  // Create a new note with a default empty Delta
   const createNewNote = () => {
     const newNoteId = Date.now().toString();
     const newNote = {
@@ -36,12 +30,13 @@ function App() {
     setNotes(prevNotes => [...prevNotes, newNote]);
     setActiveNote(newNote);
 
+    // If the editor is ready, update its content.
     if (quillRef.current) {
       quillRef.current.setContents(new Delta());
     }
   };
 
-  // When a note is selected (from search dropdown), load its content in the editor.
+  // When a note is selected from the search dropdown
   const handleNoteSelect = (note) => {
     setActiveNote(note);
     setShowDropdown(false);
@@ -51,7 +46,7 @@ function App() {
     }
   };
 
-  // Delete a note (both from state and from the search results if open)
+  // Delete note (updates notes state and search results)
   const deleteNote = (noteId) => {
     if (window.confirm("Are you sure you want to delete this note?")) {
       setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
@@ -65,14 +60,13 @@ function App() {
     }
   };
 
-  // When the editor text changes, update the note content and auto-derive a title
+  // Handle text changes in the editor. Derive a title from the first few words.
   const handleTextChange = (delta, oldDelta, source) => {
     if (!quillRef.current) return;
-
     if (source === 'user' && activeNote) {
       const updatedContent = quillRef.current.getContents();
       const plainText = quillRef.current.getText();
-      // Use the first few words (e.g. 5 words) as the title
+      // Use the first five words as the note title.
       const words = plainText.split(/\s+/).filter(Boolean);
       const derivedTitle = words.slice(0, 5).join(" ") || 'New Note';
 
@@ -88,14 +82,14 @@ function App() {
     }
   };
 
-  // When the search field is focused, show all notes sorted by latest update.
+  // When search input is focused, show all notes sorted by latest update.
   const handleSearchFocus = () => {
     setShowDropdown(true);
     const sortedNotes = [...notes].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     setSearchResults(sortedNotes);
   };
 
-  // Filter notes as the user types in the search field.
+  // Update search query and filter notes based on title.
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -106,6 +100,11 @@ function App() {
       const filtered = notes.filter(note => note.title.toLowerCase().includes(query.toLowerCase()));
       setSearchResults(filtered);
     }
+  };
+
+  // Called from SearchBar when a click outside is detected.
+  const handleCloseDropdown = () => {
+    setShowDropdown(false);
   };
 
   return (
@@ -120,6 +119,7 @@ function App() {
         showDropdown={showDropdown}
         onSelectNote={handleNoteSelect}
         onDeleteNote={deleteNote}
+        onClose={handleCloseDropdown}
       />
 
       <CreateNoteButton onCreateNewNote={createNewNote} />
