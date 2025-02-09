@@ -1,10 +1,10 @@
+// App.jsx
 import React, { useRef, useState } from 'react';
 import './App.css';
 import Editor from './components/QuillEditor';
 import CreateNoteButton from './components/CreateNoteButton';
-import NoteList from './components/NoteList';
 import SearchBar from './components/SearchBar';
-import Quill from "quill";
+import Quill from 'quill';
 
 const Delta = Quill.import('delta');
 
@@ -12,15 +12,17 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [activeNote, setActiveNote] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
   const quillRef = useRef(null);
 
+  // Helper: Convert Quill Delta to plain text
   const getPlainTextFromDelta = (delta) => {
     if (!delta || !delta.ops) return '';
-    return delta.ops.map(op => typeof op.insert === 'string' ? op.insert : '').join('');
+    return delta.ops.map(op => (typeof op.insert === 'string' ? op.insert : '')).join('');
   };
 
+  // Create a new note with default content
   const createNewNote = () => {
     const newNoteId = Date.now().toString();
     const newNote = {
@@ -39,14 +41,17 @@ function App() {
     }
   };
 
+  // When a note is selected (from search dropdown), load its content in the editor.
   const handleNoteSelect = (note) => {
     setActiveNote(note);
     setShowDropdown(false);
+    setSearchQuery('');
     if (quillRef.current) {
       quillRef.current.setContents(note.content);
     }
   };
 
+  // Delete a note (both from state and from the search results if open)
   const deleteNote = (noteId) => {
     if (window.confirm("Are you sure you want to delete this note?")) {
       setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
@@ -56,45 +61,59 @@ function App() {
           quillRef.current.setContents(new Delta());
         }
       }
+      setSearchResults(prevResults => prevResults.filter(note => note.id !== noteId));
     }
   };
 
+  // When the editor text changes, update the note content and auto-derive a title
   const handleTextChange = (delta, oldDelta, source) => {
     if (!quillRef.current) return;
 
     if (source === 'user' && activeNote) {
       const updatedContent = quillRef.current.getContents();
       const plainText = quillRef.current.getText();
-      const firstLine = plainText.split('\n')[0].trim();
-      const derivedTitle = firstLine || 'New Note';
+      // Use the first few words (e.g. 5 words) as the title
+      const words = plainText.split(/\s+/).filter(Boolean);
+      const derivedTitle = words.slice(0, 5).join(" ") || 'New Note';
 
-      const updatedNote = { ...activeNote, content: updatedContent, title: derivedTitle };
+      const updatedNote = {
+        ...activeNote,
+        content: updatedContent,
+        title: derivedTitle,
+        updatedAt: new Date(),
+      };
+
       setActiveNote(updatedNote);
       setNotes(prevNotes => prevNotes.map(note => note.id === updatedNote.id ? updatedNote : note));
     }
   };
 
+  // When the search field is focused, show all notes sorted by latest update.
   const handleSearchFocus = () => {
     setShowDropdown(true);
-    setSearchResults([...notes].sort((a, b) => b.updatedAt - a.updatedAt));
+    const sortedNotes = [...notes].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    setSearchResults(sortedNotes);
   };
 
+  // Filter notes as the user types in the search field.
   const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
+    const query = e.target.value;
     setSearchQuery(query);
     if (query === '') {
-      setSearchResults([...notes].sort((a, b) => b.updatedAt - a.updatedAt));
+      const sortedNotes = [...notes].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      setSearchResults(sortedNotes);
     } else {
-      setSearchResults(notes.filter(note => note.title.toLowerCase().includes(query)));
+      const filtered = notes.filter(note => note.title.toLowerCase().includes(query.toLowerCase()));
+      setSearchResults(filtered);
     }
   };
 
   return (
     <div className="container">
       <h1>Note Taking App</h1>
+
       <SearchBar
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
         onFocus={handleSearchFocus}
         onChange={handleSearchChange}
         searchResults={searchResults}
@@ -102,9 +121,15 @@ function App() {
         onSelectNote={handleNoteSelect}
         onDeleteNote={deleteNote}
       />
+
       <CreateNoteButton onCreateNewNote={createNewNote} />
-      <Editor ref={quillRef} readOnly={false} defaultValue={activeNote?.content || new Delta()} onTextChange={handleTextChange} />
-      <NoteList notes={notes} onNoteSelect={handleNoteSelect} onDeleteNote={deleteNote} />
+
+      <Editor
+        ref={quillRef}
+        readOnly={false}
+        defaultValue={activeNote ? activeNote.content : new Delta()}
+        onTextChange={handleTextChange}
+      />
     </div>
   );
 }

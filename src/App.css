@@ -39,3 +39,15 @@ button:focus-visible {
   color: #888;
   font-size: 0.8em;
 }
+
+/* App.css */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+button {
+  padding: 8px 12px;
+  margin-top: 10px;
+}
