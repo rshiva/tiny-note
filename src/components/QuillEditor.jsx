@@ -1,63 +1,71 @@
-// QuillEditor.jsx
-import React, { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
-import Quill from "quill";
-import 'quill/dist/quill.snow.css';
+import React, { useCallback, useRef } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-const Editor = forwardRef(({ readOnly, defaultValue, onTextChange, onSelectionChange }, ref) => {
-  const containerRef = useRef(null);
-  const defaultValueRef = useRef(defaultValue);
-  const onTextChangeRef = useRef(onTextChange);
-  const onSelectionChangeRef = useRef(onSelectionChange);
-  const quillInstanceRef = useRef(null);
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }],
+    ["link", "image"],
+    ["clean"],
+  ],
+};
 
-  useLayoutEffect(() => {
-    onTextChangeRef.current = onTextChange;
-    onSelectionChangeRef.current = onSelectionChange;
-  });
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "ordered",
+  "link",
+  "image",
+];
 
-  useEffect(() => {
-    const container = containerRef.current;
-    const editorContainer = document.createElement('div');
-    container.appendChild(editorContainer);
+const RichTextEditor = React.forwardRef(({ value, onChange }, ref) => {
+  const quillRef = useRef(null);
 
-    const quillEditor = new Quill(editorContainer, {
-      theme: 'snow',
-    });
-
-    quillInstanceRef.current = quillEditor;
-
-    if (typeof ref === 'function') {
-      ref(quillEditor);
-    } else if (ref) {
-      ref.current = quillEditor;
-    }
-
-    if (defaultValueRef.current) {
-      quillEditor.setContents(defaultValueRef.current);
-    }
-
-    quillEditor.on(Quill.events.TEXT_CHANGE, (...args) => {
-      onTextChangeRef.current?.(...args);
-    });
-
-    quillEditor.on(Quill.events.SELECTION_CHANGE, (...args) => {
-      onSelectionChangeRef.current?.(...args);
-    });
-
-    return () => {
-      if (typeof ref === 'function') {
-        ref(null);
-      } else if (ref) {
-        ref.current = null;
+  const handleTextChange = useCallback(
+    (content, delta, source, editor) => {
+      if (value !== undefined && value !== null) {
+        // Check if 'value' is valid
+        if (onChange) {
+          onChange(content);
+        }
+      } else {
+        console.log(
+          "RichTextEditor: handleTextChange - Value prop is undefined or null, preventing onChange call."
+        ); // Debug log in RichTextEditor
       }
-      quillInstanceRef.current = null;
-      container.innerHTML = '';
-    };
-  }, [ref]);
+    },
+    [onChange, value]
+  );
 
-  return <div ref={containerRef}></div>;
+  const getEditor = useCallback(() => {
+    return quillRef.current && quillRef.current.getEditor();
+  }, []);
+
+  React.useImperativeHandle(ref, () => ({
+    getEditor: getEditor,
+  }));
+
+  return (
+    <div className="rich-text-editor-container">
+      <ReactQuill
+        ref={quillRef}
+        value={value || ""}
+        onChange={handleTextChange}
+        placeholder="Start typing..."
+        className="quill-editor"
+        modules={modules}
+        formats={formats}
+      />
+    </div>
+  );
 });
 
-Editor.displayName = 'Editor';
+RichTextEditor.displayName = "RichTextEditor";
 
-export default Editor;
+export default RichTextEditor;

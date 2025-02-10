@@ -1,53 +1,462 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* src/App.css */
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../fonts/EBGaramond-Regular.ttf') format('truetype');
+  /* Font-face declaration for EB Garamond - remains unchanged */
+  font-weight: 500;
+  font-style: normal;
 }
 
-.container {
-  padding: 2rem;
-}
-
-.card {
-  padding: 2em;
+/* Reset global styles and base styles - Minimalist */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  /* Keep overflow hidden on body and html for layout control - No change */
+  font-family: 'EB Garamond', serif;
+  /* Use EB Garamond as the primary font - No change */
+  -webkit-font-smoothing: antialiased;
+  /* Keep font smoothing for better text rendering on Webkit - No change */
+  -moz-osx-font-smoothing: grayscale;
+  /* Keep font smoothing for better text rendering on Firefox - No change */
+  color: #283740;
+  /* Slightly darker text color for body and html for better readability - Changed from #333 to #222 */
+  /* Using #222 instead of #333 for a darker shade of grey, closer to black, improving text contrast and readability */
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  color: white;
+  background-color: transparent;
+  /* Keep transparent background for buttons - No change */
+  color: #007AFF;
+  /* Keep Apple's blue for interactive elements - No change */
+  padding: 8px 12px;
+  /* Keep button padding - No change */
+  border-radius: 4px;
+  /* Keep button border-radius - No change */
+  border: none;
+  /* Keep no border for buttons - No change */
+  appearance: none;
+  /* Keep appearance reset for buttons - No change */
+  font-size: 1rem;
+  /* Keep base font size for buttons - No change */
   cursor: pointer;
-  transition: border-color 0.25s;
+  /* Keep cursor pointer for buttons - No change */
+  opacity: 0.9;
+  /* Keep opacity for button state - No change */
+  transition: opacity 0.2s ease-in-out;
+  /* Keep smooth transition for buttons - No change */
+  box-shadow: none;
+  /* Keep no box-shadow for buttons - No change */
 }
 
 button:hover {
-  border-color: #646cff;
+  opacity: 1;
+  /* Keep hover opacity for buttons - No change */
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+li {
+  list-style: none;
+  /* Keep list style reset - No change */
 }
 
-.footer {
-  color: #888;
+a {
+  text-decoration: none;
+  /* Keep text decoration none for links - No change */
+  color: inherit;
+  /* Keep color inheritance for links - No change */
+}
+
+.app-container {
+  display: flex;
+  /* Keep flex display for app container - No change */
+  flex-direction: column;
+  /* Keep column direction for app container - No change */
+  height: 100vh;
+  /* Keep full viewport height for app container - No change */
+  background-color: #f9f9f9;
+  /* Keep light background color - No change */
+  padding: 0;
+  /* Keep no padding for app container - No change */
+  box-sizing: border-box;
+  /* Keep border-box sizing for app container - No change */
+}
+
+/* Note Header Styles - Clean and Simple */
+.note-dropdown-container {
+  padding: 15px 20px 10px 20px;
+  /* Keep padding for note dropdown container - No change */
+  border-bottom: 1px solid #eee;
+  /* Keep light border for note dropdown container - No change */
+  margin-bottom: 0;
+  /* Keep margin bottom for note dropdown container - No change */
+  display: flex;
+  /* Keep flex display for note dropdown container - No change */
+  align-items: center;
+  /* Keep align items center for note dropdown container - No change */
+  justify-content: space-between;
+  /* Keep justify content space-between for note dropdown container - No change */
+}
+
+.note-dropdown {
+  position: absolute;
+  /* Keep absolute positioning for note dropdown - No change */
+  width: calc(100% - 75px);
+  /* Keep width calculation for note dropdown - No change */
+  background: white;
+  /* Keep white background for note dropdown - No change */
+  border: 1px solid #ddd;
+  /* Keep light border for note dropdown - No change */
+  border-radius: 6px;
+  /* Keep border radius for note dropdown - No change */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Keep box shadow for note dropdown - No change */
+  z-index: 100;
+  /* Keep z-index for note dropdown - No change */
+  max-height: 200px;
+  /* Keep max height for note dropdown - No change */
+  overflow-y: auto;
+  /* Keep vertical scroll for note dropdown - No change */
+}
+
+
+/* Search Bar Styles - Minimalist */
+.dropdown-search {
+  flex-grow: 1;
+  /* Keep flex grow for search bar - No change */
+  padding: 10px 12px;
+  /* Keep padding for search bar - No change */
+  border: 1px solid #ddd;
+  /* Keep light border for search bar - No change */
+  border-radius: 6px;
+  /* Keep border radius for search bar - No change */
+  margin-right: 8px;
+  /* Keep right margin for search bar - No change */
+  font-size: 1rem;
+  /* Keep font size for search bar - No change */
+  box-shadow: none;
+  /* Keep no box shadow for search bar - No change */
+  -webkit-appearance: none;
+  /* Keep appearance reset for webkit - No change */
+  -moz-appearance: none;
+  /* Keep appearance reset for mozilla - No change */
+  appearance: none;
+  /* Keep appearance reset for search bar - No change */
+}
+
+.dropdown-search:focus {
+  outline: none;
+  /* Keep no outline on focus for search bar - No change */
+  border-color: #bbb;
+  /* Keep border color change on focus for search bar - No change */
+  box-shadow: 0 0 0 1px #bbb;
+  /* Keep subtle box shadow on focus for search bar - No change */
+}
+
+
+/* Create Note Icon Styles - Prominent + */
+.create-note-icon {
+  background: none;
+  /* Keep no background for create note icon - No change */
+  border: none;
+  /* Keep no border for create note icon - No change */
+  font-size: 2.2em;
+  /* Keep font size for create note icon - No change */
+  color: #007AFF;
+  /* Keep apple blue color for create note icon - No change */
+  cursor: pointer;
+  /* Keep cursor pointer for create note icon - No change */
+  padding: 0;
+  /* Keep no padding for create note icon - No change */
+  line-height: 1;
+  /* Keep line height for create note icon - No change */
+  opacity: 0.9;
+  /* Keep opacity for create note icon - No change */
+  transition: opacity 0.2s ease;
+  /* Keep opacity transition for create note icon - No change */
+  display: inline-flex;
+  /* Keep inline flex display for create note icon - No change */
+  align-items: center;
+  /* Keep align items center for create note icon - No change */
+  justify-content: center;
+  /* Keep justify content center for create note icon - No change */
+  margin: 0;
+  /* Keep no margin for create note icon - No change */
+}
+
+.create-note-icon:hover {
+  opacity: 1;
+  /* Keep hover opacity for create note icon - No change */
+}
+
+
+/* Note List Styles - Very Clean */
+.note-list {
+  list-style: none;
+  /* Keep list style reset for note list - No change */
+  padding: 0;
+  /* Keep no padding for note list - No change */
+  margin: 0;
+  /* Keep no margin for note list - No change */
+  max-height: 250px;
+  /* Keep max height for note list - No change */
+  overflow-y: auto;
+  /* Keep vertical scroll for note list - No change */
+  padding-top: 5px;
+  /* Keep top padding for note list - No change */
+}
+
+.note-list li {
+  padding: 10px 20px;
+  /* Keep padding for note list items - No change */
+  cursor: pointer;
+  /* Keep cursor pointer for note list items - No change */
+  display: flex;
+  /* Keep flex display for note list items - No change */
+  justify-content: space-between;
+  /* Keep justify content space-between for note list items - No change */
+  align-items: center;
+  /* Keep align items center for note list items - No change */
+  transition: background-color 0.15s ease;
+  /* Keep background color transition for note list items - No change */
+  border-bottom: 1px solid #f0f0f0;
+  /* Keep light border bottom for note list items - No change */
+}
+
+.note-list li:last-child {
+  border-bottom: none;
+  /* Keep no border bottom for last note list item - No change */
+}
+
+.note-list li.active,
+.note-list li:hover {
+  background-color: #f0f0f0;
+  /* Keep light background color on hover/active for note list items - No change */
+}
+
+.delete-note-button {
+  background: none;
+  /* Keep no background for delete button - No change */
+  border: none;
+  /* Keep no border for delete button - No change */
+  color: #e42828;
+  /* Keep light gray delete icon color - No change */
+  cursor: pointer;
+  /* Keep cursor pointer for delete button - No change */
   font-size: 0.8em;
+  /* Keep font size for delete button - No change */
+  margin-left: 10px;
+  /* Keep left margin for delete button - No change */
+  opacity: 0.5;
+  /* Keep opacity for delete button - No change */
+  transition: opacity 0.2s ease;
+  /* Keep opacity transition for delete button - No change */
 }
 
+.delete-note-button:hover {
+  opacity: 1;
+  /* Keep hover opacity for delete button - No change */
+  color: #888;
+  /* Keep darker gray color on hover for delete button - No change */
+}
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
+.no-notes {
   padding: 20px;
+  /* Keep padding for no notes message - No change */
+  text-align: center;
+  /* Keep text align center for no notes message - No change */
+  color: #999;
+  /* Keep lighter color for no notes message - No change */
+  font-style: italic;
+  /* Keep italic font style for no notes message - No change */
 }
 
-button {
-  padding: 8px 12px;
-  margin-top: 10px;
+
+/* Editor Container Styles -  Clean White Box */
+.editor-container {
+  position: relative;
+  /* Ensure position relative is here for toolbar positioning - No change */
+  flex-grow: 1;
+  /* Keep flex grow for editor container - No change */
+  display: flex;
+  /* Keep flex display for editor container - No change */
+  flex-direction: column;
+  /* Keep column direction for editor container - No change */
+  background-color: #f4f4f4;
+  /* Keep light background color for editor container - No change */
+  border-radius: 0;
+  /* Keep no border radius for editor container - No change */
+  box-shadow: none;
+  /* Keep no box shadow for editor container - No change */
+  overflow: hidden;
+  /* Keep overflow hidden for editor container - No change */
+  margin: 0 5px;
+  /* Keep margin for editor container - No change */
+  border: 1px solid #ddd;
+  /* Keep light border for editor container - No change */
+}
+
+
+/* Rich Text Editor Styles - Toolbar at Bottom */
+.rich-text-editor-container {
+  display: flex;
+  /* Keep flex display for rich text editor container - No change */
+  flex-direction: column;
+  /* Keep column direction for rich text editor container - No change */
+  height: 100%;
+  /* Keep full height for rich text editor container - No change */
+}
+
+
+.rich-text-editor-container .ql-toolbar.ql-snow {
+  position: absolute;
+  /* Keep absolute positioning for toolbar - No change */
+  bottom: 0;
+  /* Keep bottom positioning for toolbar - No change */
+  top: auto;
+  /* Keep top auto for toolbar - No change */
+  width: 100%;
+  /* Keep 100% width for toolbar - No change */
+  border-bottom: none;
+  /* Keep no bottom border for toolbar - No change */
+  box-shadow: none;
+  /* Keep no box shadow for toolbar - No change */
+  background-color: #f9f9f9;
+  /* Keep light background color for toolbar - No change */
+  order: 2;
+  /* Keep order for toolbar - No change */
+  flex-shrink: 0;
+  /* Keep flex shrink for toolbar - No change */
+  border-radius: 0 0 0 0;
+  /* Keep border radius for toolbar - No change */
+  border-top: 1px solid #eee;
+  /* Keep light top border for toolbar - No change */
+  transform: translateY(0%);
+  /* Keep transform for toolbar - No change */
+}
+
+
+.ql-container.ql-snow {
+  height: calc(100vh - 60px);
+  /* ✅ Adjust height dynamically to account for header/toolbar - No change */
+  display: flex;
+  /* Keep flex display for ql-container - No change */
+  flex-direction: column;
+  /* Keep column direction for ql-container - No change */
+  overflow-y: auto;
+  /* ✅ Enable vertical scrolling within the editor - No change */
+}
+
+.ql-editor {
+  flex-grow: 1;
+  /* Keep flex grow for ql-editor - No change */
+  padding: 20px 15px 70px 15px;
+  /* ✅ Add extra bottom padding to prevent overlap - No change */
+  font-size: 16px;
+  /* Keep base font size for editor content - No change */
+  font-family: 'EB Garamond', serif !important;
+  /* Ensure EB Garamond is applied to editor content - No change */
+  background-color: #eee;
+  color: #000000;
+  /* Set text color in editor to pure black for maximum contrast and aesthetic appeal - Changed from #222222 to #000000 */
+  /* Changed from #222222 to #000000 for pure black text in the editor, providing the strongest contrast and a crisp, professional look. This enhances readability and visual appeal. */
+  overflow-y: auto;
+  /* Keep vertical scrolling for ql-editor - No change */
+  line-height: 1.6;
+  /* Increased line-height for better readability and visual spacing - Added line-height: 1.6; */
+  /* Added line-height: 1.6; to increase the spacing between lines of text in the editor. This improves readability, especially for longer paragraphs, making the text feel less cramped and more comfortable to read. */
+  letter-spacing: 0.02em;
+  /* Slight increase in letter-spacing for improved readability - Added letter-spacing: 0.02em; */
+  /* Added letter-spacing: 0.02em; to slightly increase the spacing between letters. This subtle adjustment can enhance readability, particularly for serif fonts like EB Garamond, making the text feel more open and airy. */
+}
+
+
+.ql-container.ql-snow,
+.ql-editor.ql-blank::before {
+  border: none !important;
+  /* Keep no border for ql-container and placeholder - No change */
+  color: #aaa !important;
+  /* Keep lighter placeholder text color - No change */
+  font-style: normal !important;
+  /* Keep normal font style for placeholder - No change */
+  opacity: 0.6;
+  /* Keep opacity for placeholder text - No change */
+}
+
+.ql-toolbar.ql-snow .ql-formats button {
+  background: none;
+  /* Keep no background for toolbar buttons - No change */
+  border: none;
+  /* Keep no border for toolbar buttons - No change */
+  color: #777;
+  /* Keep medium gray color for toolbar icons - No change */
+  font-size: 18px;
+  /* Keep font size for toolbar icons - No change */
+  opacity: 0.8;
+  /* Keep opacity for toolbar icons - No change */
+  transition: opacity 0.2s ease;
+  /* Keep opacity transition for toolbar icons - No change */
+  cursor: pointer;
+  /* Keep cursor pointer for toolbar icons - No change */
+  margin-right: 6px;
+  /* Keep right margin for toolbar buttons - No change */
+  /* padding: 0 6px; */
+  display: inline-flex;
+  /* Keep inline flex display for toolbar buttons - No change */
+  align-items: center;
+  /* Keep align items center for toolbar buttons - No change */
+  justify-content: center;
+  /* Keep justify content center for toolbar buttons - No change */
+  line-height: 1;
+  /* Keep line height for toolbar buttons - No change */
+}
+
+.ql-toolbar.ql-snow .ql-formats button:hover,
+.ql-toolbar.ql-snow .ql-formats button.ql-active {
+  opacity: 1;
+  /* Keep hover/active opacity for toolbar buttons - No change */
+  color: #333;
+  /* Keep darker color on hover/active for toolbar buttons - No change */
+}
+
+.ql-toolbar.ql-snow .ql-formats .ql-header,
+.ql-toolbar.ql-snow .ql-formats .ql-list {
+  margin-right: 15px;
+  /* Keep right margin for header/list formats in toolbar - No change */
+}
+
+.ql-toolbar.ql-snow .ql-formats {
+  margin-right: 0;
+  /* Keep no right margin for formats in toolbar - No change */
+}
+
+.ql-toolbar.ql-snow .ql-formats button {
+  margin-right: 0;
+  /* Keep no right margin for buttons in toolbar - No change */
+}
+
+.ql-toolbar.ql-snow {
+  position: fixed;
+  /* ✅ Fixes toolbar at the bottom - No change */
+  bottom: 0;
+  /* Keep bottom positioning for fixed toolbar - No change */
+  left: 0;
+  /* Keep left positioning for fixed toolbar - No change */
+  width: 100%;
+  /* Keep 100% width for fixed toolbar - No change */
+  border-top: 1px solid #ddd;
+  /* Keep light top border for fixed toolbar - No change */
+  background-color: #f9f9f9;
+  /* Keep light background for fixed toolbar - No change */
+  padding: 8px 15px;
+  /* Keep padding for fixed toolbar - No change */
+  z-index: 100;
+  /* Keep z-index for fixed toolbar - No change */
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+  border-color: #ccc;
+  top: -114px !important;
 }
