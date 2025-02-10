@@ -541,3 +541,176 @@ a {
     background: rgba(255, 255, 255, 0.1);
   }
 }
+
+/* Settings Styles */
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.settings-modal {
+  background: var(--app-background);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 350px;
+}
+
+.settings-section {
+  margin: 15px 0;
+}
+
+.setting-item {
+  margin: 15px 0;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.setting-item select {
+  margin-top: 5px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.backup-location {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.backup-location code {
+  display: block;
+  margin-top: 5px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.backup-warning {
+  color: #e65100;
+  margin: 0;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.settings-actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.settings-actions button.primary {
+  background: #007AFF;
+  color: white;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .setting-item select {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+  }
+}
+
+.backup-status {
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.backup-status label {
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.backup-now {
+  background: #007AFF;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+}
+
+.backup-now:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .backup-status {
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
+/* Update the settings button styles */
+.settings-button {
+  position: static; /* Change from fixed to static */
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+  padding: 6px;
+}
+
+.settings-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+/* Update the note-dropdown-container to include settings button */
+.note-dropdown-container {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .settings-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #999;
+  }
+  
+  .settings-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+}

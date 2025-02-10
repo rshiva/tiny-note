@@ -1,0 +1,126 @@
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.settings-modal {
+  background: var(--app-background);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 350px;
+  position: relative;
+  z-index: 1100;
+}
+
+.settings-section {
+  margin: 15px 0;
+}
+
+.setting-item {
+  margin: 15px 0;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.setting-item input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.setting-item select {
+  cursor: pointer;
+  margin-top: 5px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.setting-item select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.setting-item input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.backup-status {
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.backup-location {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.backup-location code {
+  display: block;
+  margin-top: 5px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.backup-warning {
+  color: #e65100;
+  margin: 0;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.settings-actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.settings-actions button:first-child {
+  background: #007AFF;
+  color: white;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .setting-item select {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+  }
+
+  .backup-status {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .backup-location code {
+    background: rgba(255, 255, 255, 0.05);
+  }
+} 

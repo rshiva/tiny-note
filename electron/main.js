@@ -1,9 +1,13 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } = require('electron');
 const path = require('path');
 const isDev = process.env.NODE_ENV !== 'production';
 const DatabaseService = require('../src/services/database');
+const SettingsService = require('../src/services/settings');
+const os = require('os');
+const fs = require('fs');
 
 let db;
+let settings;
 let tray = null;
 let mainWindow = null;
 
@@ -60,7 +64,7 @@ function createWindow() {
 function createTray() {
   const icon = nativeImage.createFromPath(
     path.join(__dirname, '../assets/tray-icon.png')
-  ).resize({ width: 16, height: 16 });
+  ).resize({ width: 20, height: 20 });
 
   tray = new Tray(icon);
   
@@ -70,6 +74,14 @@ function createTray() {
       click: () => {
         mainWindow.show();
         positionWindow();
+      }
+    },
+    {
+      label: 'Settings',
+      click: () => {
+        mainWindow.show();
+        positionWindow();
+        mainWindow.webContents.send('show-settings');
       }
     },
     { type: 'separator' },
@@ -98,6 +110,8 @@ function createTray() {
 // initialization and is ready to create browser windows.
 app.whenReady().then(() => {
   db = new DatabaseService();
+  settings = new SettingsService();
+  settings.setDatabase(db);
   createWindow();
   createTray();
 });
@@ -117,6 +131,62 @@ ipcMain.handle('update-note', async (_, { id, content, updatedAt }) => {
 
 ipcMain.handle('delete-note', async (_, id) => {
   return db.deleteNote(id);
+});
+
+// Settings IPC handlers
+ipcMain.handle('get-settings', () => {
+  return settings.getSettings();
+});
+
+ipcMain.handle('save-settings', (_, newSettings) => {
+  settings.updateSettings(newSettings);
+  return settings.getSettings();
+});
+
+function getICloudPath() {
+  // Temporarily use Documents folder instead of iCloud
+  if (process.platform === 'darwin') {
+    return path.join(os.homedir(), 'Documents/');
+  }
+  if (process.platform === 'win32') {
+    return path.join(os.homedir(), 'Documents/TinyNote');
+  }
+  return null;
+}
+
+ipcMain.handle('get-icloud-status', () => {
+  const iCloudPath = getICloudPath();
+  return {
+    available: iCloudPath && fs.existsSync(iCloudPath),
+    path: iCloudPath
+  };
+});
+
+ipcMain.handle('backup-to-icloud', async () => {
+  const backupPath = getICloudPath();
+  if (!backupPath) {
+    console.log('Backup path not available');
+    return { success: false, error: 'Backup path not available' };
+  }
+
+  try {
+    const dbPath = path.join(app.getPath('userData'), 'notes.db');
+    await fs.promises.mkdir(backupPath, { recursive: true });
+    const backupFilePath = path.join(backupPath, 'notes_backup.db');
+    const tempPath = backupFilePath + '.tmp';
+
+    console.log('Creating backup at:', backupFilePath);
+
+    // Create atomic backup
+    await fs.promises.copyFile(dbPath, tempPath);
+    await fs.promises.rename(tempPath, backupFilePath);
+    
+    console.log('Backup completed successfully');
+    return { success: true, path: backupFilePath };
+  } catch (err) {
+    console.error('Backup failed:', err);
+    return { success: false, error: err.message };
+  }
 });
 
 // Quit when all windows are closed.

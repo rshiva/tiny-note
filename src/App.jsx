@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import RichTextEditor from "./components/QuillEditor";
 import "./App.css"; // Import CSS for styling
 import SearchBar from "./components/SearchBar";
+import Settings from './components/Settings';
+import SettingsButton from './components/SettingsButton';
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -12,6 +14,14 @@ function App() {
   const editorRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const [settings, setSettings] = useState({
+    iCloudBackup: {
+      enabled: false,
+      frequency: 'daily',
+      lastBackup: null
+    }
+  });
 
   // Handle search input focus to show all notes
   const handleSearchFocus = () => {
@@ -158,6 +168,46 @@ function App() {
     }
   }, [isLoading, notes.length]);
 
+  // Load settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const savedSettings = await window.electronAPI.getSettings();
+        setSettings(savedSettings);
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  useEffect(() => {
+    const handleShowSettings = () => setShowSettings(true);
+    window.electronAPI.onShowSettings(handleShowSettings);
+    return () => window.electronAPI.offShowSettings(handleShowSettings);
+  }, []);
+
+  useEffect(() => {
+    const initializeBackups = async () => {
+      const iCloudStatus = await window.electronAPI.getICloudStatus();
+      if (iCloudStatus.available) {
+        settings.startBackupSchedule();
+      }
+    };
+    
+    initializeBackups();
+  }, []);
+
+  const handleSaveSettings = async (newSettings) => {
+    try {
+      const updatedSettings = await window.electronAPI.saveSettings(newSettings);
+      setSettings(updatedSettings);
+      setShowSettings(false);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    }
+  };
+
   return (
     <div className="app-container">
       <div className="note-dropdown-container">
@@ -174,36 +224,47 @@ function App() {
           }}
           onDeleteNote={deleteNote}
         />
-        <button className="create-note-icon" onClick={createNewNote}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="0.8em"
-            height="0.8em"
-            viewBox="0 0 36 36"
-          >
-            <path
-              fill="currentColor"
-              d="M28 30H6V8h13.22l2-2H6a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2V15l-2 2Z"
-              className="clr-i-outline clr-i-outline-path-1"
-            ></path>
-            <path
-              fill="currentColor"
-              d="m33.53 5.84l-3.37-3.37a1.61 1.61 0 0 0-2.28 0L14.17 16.26l-1.11 4.81A1.61 1.61 0 0 0 14.63 23a1.7 1.7 0 0 0 .37 0l4.85-1.07L33.53 8.12a1.61 1.61 0 0 0 0-2.28M18.81 20.08l-3.66.81l.85-3.63L26.32 6.87l2.82 2.82ZM30.27 8.56l-2.82-2.82L29 4.16L31.84 7Z"
-              className="clr-i-outline clr-i-outline-path-2"
-            ></path>
-            <path fill="none" d="M0 0h36v36H0z"></path>
-          </svg>
-        </button>
+        <div className="toolbar-actions">
+          <button className="create-note-icon" onClick={createNewNote}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="0.8em"
+              height="0.8em"
+              viewBox="0 0 36 36"
+            >
+              <path
+                fill="currentColor"
+                d="M28 30H6V8h13.22l2-2H6a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2V15l-2 2Z"
+                className="clr-i-outline clr-i-outline-path-1"
+              ></path>
+              <path
+                fill="currentColor"
+                d="m33.53 5.84l-3.37-3.37a1.61 1.61 0 0 0-2.28 0L14.17 16.26l-1.11 4.81A1.61 1.61 0 0 0 14.63 23a1.7 1.7 0 0 0 .37 0l4.85-1.07L33.53 8.12a1.61 1.61 0 0 0 0-2.28M18.81 20.08l-3.66.81l.85-3.63L26.32 6.87l2.82 2.82ZM30.27 8.56l-2.82-2.82L29 4.16L31.84 7Z"
+                className="clr-i-outline clr-i-outline-path-2"
+              ></path>
+              <path fill="none" d="M0 0h36v36H0z"></path>
+            </svg>
+          </button>
+          <SettingsButton onClick={() => setShowSettings(true)} />
+        </div>
       </div>
 
       <div className="editor-container">
         <RichTextEditor
-          key={activeNoteId} // Force re-render on note switch
+          key={activeNoteId}
           value={noteContent}
           onChange={updateNoteContent}
           ref={editorRef}
         />
       </div>
+
+      {showSettings && (
+        <Settings
+          onClose={() => setShowSettings(false)}
+          currentSettings={settings}
+          onSave={handleSaveSettings}
+        />
+      )}
     </div>
   );
 }

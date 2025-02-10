@@ -17,7 +17,7 @@ class DatabaseService {
   
   
   initDatabase() {
-    const createTableQuery = `
+    const createNotesTable = `
       CREATE TABLE IF NOT EXISTS notes (
         id TEXT PRIMARY KEY,
         content TEXT NOT NULL,
@@ -25,7 +25,16 @@ class DatabaseService {
         updated_at TEXT
       )
     `;
-    this.db.exec(createTableQuery);
+
+    const createSettingsTable = `
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      )
+    `;
+
+    this.db.exec(createNotesTable);
+    this.db.exec(createSettingsTable);
   }
 
   getAllNotes() {
@@ -63,6 +72,33 @@ class DatabaseService {
     const query = 'DELETE FROM notes WHERE id = ?';
     const stmt = this.db.prepare(query);
     return stmt.run(id);
+  }
+
+  getSettingByKey(key) {
+    const query = 'SELECT value FROM settings WHERE key = ?';
+    const result = this.db.prepare(query).get(key);
+    return result ? JSON.parse(result.value) : null;
+  }
+
+  saveSetting(key, value) {
+    const query = `
+      INSERT OR REPLACE INTO settings (key, value)
+      VALUES (?, ?)
+    `;
+    const stmt = this.db.prepare(query);
+    return stmt.run(key, JSON.stringify(value));
+  }
+
+  getBackupSettings() {
+    return this.getSettingByKey('iCloudBackup') || {
+      enabled: true,
+      frequency: 'daily',
+      lastBackup: null
+    };
+  }
+
+  saveBackupSettings(backupSettings) {
+    return this.saveSetting('iCloudBackup', backupSettings);
   }
 }
 
