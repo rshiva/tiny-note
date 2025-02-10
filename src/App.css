@@ -82,22 +82,24 @@ a {
   /* Keep no padding for app container - No change */
   box-sizing: border-box;
   /* Keep border-box sizing for app container - No change */
+  background: var(--app-background);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  height: 600px;
+  width: 400px;
 }
 
 /* Note Header Styles - Clean and Simple */
 .note-dropdown-container {
-  padding: 15px 20px 10px 20px;
-  /* Keep padding for note dropdown container - No change */
-  border-bottom: 1px solid #eee;
-  /* Keep light border for note dropdown container - No change */
-  margin-bottom: 0;
-  /* Keep margin bottom for note dropdown container - No change */
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
-  /* Keep flex display for note dropdown container - No change */
   align-items: center;
-  /* Keep align items center for note dropdown container - No change */
   justify-content: space-between;
-  /* Keep justify content space-between for note dropdown container - No change */
+  gap: 8px;
 }
 
 .note-dropdown {
@@ -162,7 +164,7 @@ a {
   /* Keep no background for create note icon - No change */
   border: none;
   /* Keep no border for create note icon - No change */
-  font-size: 2.2em;
+  font-size: 2.8em;
   /* Keep font size for create note icon - No change */
   color: #007AFF;
   /* Keep apple blue color for create note icon - No change */
@@ -292,10 +294,13 @@ a {
   /* Keep no box shadow for editor container - No change */
   overflow: hidden;
   /* Keep overflow hidden for editor container - No change */
-  margin: 0 5px;
+  margin: 4px 5px;
   /* Keep margin for editor container - No change */
   border: 1px solid #ddd;
   /* Keep light border for editor container - No change */
+  flex: 1;
+  overflow: hidden;
+  padding: 12px;
 }
 
 
@@ -461,11 +466,6 @@ a {
   top: -114px !important;
 }
 
-.search-container {
-  position: relative;
-  width: 100%;
-  margin-bottom: 10px;
-}
 
 .search-dropdown {
   position: absolute;
@@ -496,4 +496,48 @@ a {
 
 .note-item:last-child {
   border-bottom: none;
+}
+
+:root {
+  --app-background: rgba(255, 255, 255, 0.8);
+  --border-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-background: rgba(0, 0, 0, 0.8);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.search-container {
+  flex: 1;
+  position: relative;
+}
+
+.search-input {
+  width: 90%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: #007AFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-input {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+  }
+  
+  .search-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }

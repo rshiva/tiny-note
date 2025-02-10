@@ -43,7 +43,7 @@ const SearchBar = ({
         value={searchQuery}
         onFocus={onFocus}
         onChange={onChange}
-        className="dropdown-search"
+        className="search-input"
       />
       {showDropdown && (
         <div className="search-dropdown">

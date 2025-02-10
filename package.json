@@ -15,13 +15,16 @@
     "appId": "com.example.electron-react",
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "assets/**/*"
     ],
     "directories": {
       "buildResources": "assets"
     },
     "mac": {
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon.icns",
+      "darkModeSupport": true
     }
   },
   "devDependencies": {
