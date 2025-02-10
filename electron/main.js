@@ -81,7 +81,7 @@ function createTray() {
     }
   ]);
 
-  tray.setToolTip('Quick Notes');
+  tray.setToolTip('Tiny Note');
   tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
@@ -98,7 +98,6 @@ function createTray() {
 // initialization and is ready to create browser windows.
 app.whenReady().then(() => {
   db = new DatabaseService();
-  console.log('Database location:', db.getDbPath());
   createWindow();
   createTray();
 });

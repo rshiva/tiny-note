@@ -29,7 +29,6 @@ const RichTextEditor = React.forwardRef(({ value, onChange }, ref) => {
 
   const handleTextChange = useCallback(
     (content) => {
-      console.log("Editor content changed:", content); // Debug log
       if (onChange) {
         onChange(content);
       }

@@ -11,7 +11,6 @@ class DatabaseService {
   constructor() {
     const userDataPath = app.getPath('userData');
     const dbPath = path.join(userDataPath, 'notes.db');
-    console.log('Database path:', dbPath);
     this.db = new Database(dbPath);
     this.initDatabase();
   }
