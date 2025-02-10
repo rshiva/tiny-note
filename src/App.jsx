@@ -51,24 +51,12 @@ function App() {
   }, []);
 
   const createNewNote = useCallback(() => {
-    if (activeNoteId !== null) {
-      const currentNote = notes.find((note) => note.id === activeNoteId);
-      console.log("Current Note Content (Raw HTML):", currentNote.content);
-      console.log(
-        "Extract content: ",
-        extractPlainText(currentNote.content).trim()
-      );
-      if (currentNote) {
-        if (extractPlainText(currentNote.content).trim() === "") {
-          console.log(
-            "createNewNote - Current active note is empty (text-based check), not saving."
-          );
-          console.log(
-            "createNewNote - Current note is empty, not creating new note."
-          );
-          setNoteContent(""); // Optionally clear the editor
-          return; // Exit without creating a new note
-        }
+    // Check if current note exists and is empty
+    if (activeNoteId) {
+      const currentNote = notes.find(note => note.id === activeNoteId);
+      if (currentNote && extractPlainText(currentNote.content).trim() === "") {
+        editorRef.current?.getEditor()?.focus();
+        return;
       }
     }
 
@@ -77,20 +65,19 @@ function App() {
       id: newNoteId,
       content: "",
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    setNotes((prevNotes) => [...prevNotes, newNote]);
+    // Update state in correct order
+    setNotes(prevNotes => [...prevNotes, newNote]);
     setActiveNoteId(newNoteId);
     setNoteContent("");
 
+    // Focus the editor
     requestAnimationFrame(() => {
-      if (editorRef.current?.getEditor) {
-        editorRef.current.getEditor().focus();
-      }
+      editorRef.current?.getEditor()?.focus();
     });
-
-    // console.log('createNewNote - New note created (UUID):', newNote, 'Active ID set to:', newNoteId);
-  }, [notes, activeNoteId, setNoteContent]);
+  }, [activeNoteId, notes]);
 
   // Filter and sort notes
   const sortedNotes = [...notes].sort(
@@ -101,12 +88,18 @@ function App() {
   );
 
   const updateNoteContent = useCallback((content) => {
-    if (activeNoteId === null) return;
+    if (!activeNoteId) return;
     
-    setNotes((prevNotes) =>
-      prevNotes.map((note) =>
-        note.id === activeNoteId
-          ? { ...note, content, updatedAt: new Date().toISOString() }
+    console.log("Updating note content:", { activeNoteId, content });
+    
+    setNotes(prevNotes => 
+      prevNotes.map(note => 
+        note.id === activeNoteId 
+          ? { 
+              ...note, 
+              content, 
+              updatedAt: new Date().toISOString() 
+            } 
           : note
       )
     );
@@ -164,6 +157,13 @@ function App() {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
   };
+
+  // Add this effect to handle initial note
+  useEffect(() => {
+    if (notes.length === 0) {
+      createNewNote();
+    }
+  }, []);
 
   return (
     <div className="app-container">

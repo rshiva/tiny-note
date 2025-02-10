@@ -28,19 +28,13 @@ const RichTextEditor = React.forwardRef(({ value, onChange }, ref) => {
   const quillRef = useRef(null);
 
   const handleTextChange = useCallback(
-    (content, delta, source, editor) => {
-      if (value !== undefined && value !== null) {
-        // Check if 'value' is valid
-        if (onChange) {
-          onChange(content);
-        }
-      } else {
-        console.log(
-          "RichTextEditor: handleTextChange - Value prop is undefined or null, preventing onChange call."
-        ); // Debug log in RichTextEditor
+    (content) => {
+      console.log("Editor content changed:", content); // Debug log
+      if (onChange) {
+        onChange(content);
       }
     },
-    [onChange, value]
+    [onChange]
   );
 
   const getEditor = useCallback(() => {
