@@ -11,6 +11,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const editorRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Handle search input focus to show all notes
   const handleSearchFocus = () => {
@@ -24,37 +25,26 @@ function App() {
     setShowDropdown(false);
   };
 
-  // Load notes from localStorage on app start
+  // Load notes from database on app start
   useEffect(() => {
-    try {
-      const storedNotes = localStorage.getItem("notes");
-      if (storedNotes) {
-        const parsedNotes = JSON.parse(storedNotes);
-        setNotes(parsedNotes);
-        if (parsedNotes.length > 0) {
-          setActiveNoteId(parsedNotes[0].id);
-          setNoteContent(parsedNotes[0].content);
-          console.log(
-            "Loaded notes from localStorage. Setting first note as active:",
-            parsedNotes[0].id,
-            "Total notes loaded:",
-            parsedNotes.length
-          ); // Enhanced log
-        } else {
-          console.log(
-            "Loaded notes from localStorage, but no notes were found."
-          );
+    const loadNotes = async () => {
+      try {
+        const dbNotes = await window.electronAPI.getAllNotes();
+        setNotes(dbNotes);
+        if (dbNotes.length > 0) {
+          setActiveNoteId(dbNotes[0].id);
+          setNoteContent(dbNotes[0].content);
         }
-      } else {
-        console.log("No notes found in localStorage on initial load.");
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading notes:', error);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error loading notes from localStorage:", error);
-    }
+    };
+    loadNotes();
   }, []);
 
-  const createNewNote = useCallback(() => {
-    // Check if current note exists and is empty
+  const createNewNote = useCallback(async () => {
     if (activeNoteId) {
       const currentNote = notes.find(note => note.id === activeNoteId);
       if (currentNote && extractPlainText(currentNote.content).trim() === "") {
@@ -63,24 +53,26 @@ function App() {
       }
     }
 
-    const newNoteId = crypto.randomUUID();
     const newNote = {
-      id: newNoteId,
+      id: crypto.randomUUID(),
       content: "",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    // Update state in correct order
-    setNotes(prevNotes => [...prevNotes, newNote]);
-    setActiveNoteId(newNoteId);
-    setNoteContent("");
-
-    // Focus the editor
-    requestAnimationFrame(() => {
-      editorRef.current?.getEditor()?.focus();
-    });
-  }, [activeNoteId, notes]);
+    try {
+      const createdNote = await window.electronAPI.createNote(newNote);
+      setNotes(prevNotes => [createdNote, ...prevNotes]);
+      setActiveNoteId(createdNote.id);
+      setNoteContent("");
+      
+      requestAnimationFrame(() => {
+        editorRef.current?.getEditor()?.focus();
+      });
+    } catch (error) {
+      console.error('Error creating note:', error);
+    }
+  }, [activeNoteId, notes, isLoading]);
 
   // Filter and sort notes
   const sortedNotes = [...notes].sort(
@@ -90,23 +82,28 @@ function App() {
     note.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const updateNoteContent = useCallback((content) => {
+  const updateNoteContent = useCallback(async (content) => {
     if (!activeNoteId) return;
     
-    console.log("Updating note content:", { activeNoteId, content });
-    
-    setNotes(prevNotes => 
-      prevNotes.map(note => 
-        note.id === activeNoteId 
-          ? { 
-              ...note, 
-              content, 
-              updatedAt: new Date().toISOString() 
-            } 
-          : note
-      )
-    );
-    setNoteContent(content);
+    const updatedAt = new Date().toISOString();
+    try {
+      await window.electronAPI.updateNote({
+        id: activeNoteId,
+        content,
+        updatedAt
+      });
+      
+      setNotes(prevNotes => 
+        prevNotes.map(note => 
+          note.id === activeNoteId 
+            ? { ...note, content, updatedAt } 
+            : note
+        )
+      );
+      setNoteContent(content);
+    } catch (error) {
+      console.error('Error updating note:', error);
+    }
   }, [activeNoteId]);
 
   const switchNote = useCallback((noteId) => {
@@ -123,51 +120,43 @@ function App() {
     }
   }, [notes]);
 
-  const deleteNote = useCallback((noteId) => {
+  const deleteNote = useCallback(async (noteId) => {
     if (!window.confirm('Are you sure you want to delete this note?')) {
       return;
     }
 
-    setNotes((prevNotes) => {
-      const updatedNotes = prevNotes.filter((note) => note.id !== noteId);
-      
-      if (activeNoteId === noteId) {
-        if (updatedNotes.length > 0) {
-          setActiveNoteId(updatedNotes[0].id);
-          setNoteContent(updatedNotes[0].content);
-        } else {
-          setActiveNoteId(null);
-          setNoteContent("");
-        }
-      }
-      return updatedNotes;
-    });
-  }, [activeNoteId]);
-
-  // Keep local storage in sync
-  useEffect(() => {
     try {
-      localStorage.setItem("notes", JSON.stringify(notes));
+      await window.electronAPI.deleteNote(noteId);
+      setNotes(prevNotes => {
+        const updatedNotes = prevNotes.filter(note => note.id !== noteId);
+        
+        if (activeNoteId === noteId) {
+          if (updatedNotes.length > 0) {
+            setActiveNoteId(updatedNotes[0].id);
+            setNoteContent(updatedNotes[0].content);
+          } else {
+            setActiveNoteId(null);
+            setNoteContent("");
+          }
+        }
+        return updatedNotes;
+      });
     } catch (error) {
-      console.error("Error saving notes:", error);
+      console.error('Error deleting note:', error);
     }
-  }, [notes]);
-
-  // const filteredNotes = notes.filter(note =>
-  //   note.content.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+  }, [activeNoteId]);
 
   const extractPlainText = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
   };
 
-  // Add this effect to handle initial note
+  // Modify the initial note creation effect
   useEffect(() => {
-    if (notes.length === 0) {
+    if (!isLoading && notes.length === 0) {
       createNewNote();
     }
-  }, []);
+  }, [isLoading, notes.length]);
 
   return (
     <div className="app-container">
