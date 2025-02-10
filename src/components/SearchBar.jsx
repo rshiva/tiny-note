@@ -29,51 +29,40 @@ const SearchBar = ({
     };
   }, [onClose]);
 
+  const handleDelete = (noteId) => {
+    
+      onDeleteNote(noteId);
+    
+  };
+
   return (
-    <div ref={containerRef} style={{ position: 'relative', marginBottom: '10px' }}>
+    <div ref={containerRef} className="search-container">
       <input
         type="text"
         placeholder="Search notes..."
         value={searchQuery}
         onFocus={onFocus}
         onChange={onChange}
-        style={{ width: '100%', padding: '8px' }}
+        className="dropdown-search"
       />
       {showDropdown && (
-        <div style={{
-          position: 'absolute',
-          top: '40px',
-          left: 0,
-          right: 0,
-          border: '1px solid #ccc',
-          backgroundColor: 'white',
-          zIndex: 1000,
-          maxHeight: '200px',
-          overflowY: 'auto'
-        }}>
+        <div className="search-dropdown">
           {searchResults.length === 0 ? (
-            <div style={{ padding: '8px' }}>No notes are present</div>
+            <div className="no-notes">No notes found</div>
           ) : (
             searchResults.map(note => (
-              <div key={note.id} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '8px',
-                borderBottom: '1px solid #eee',
-                cursor: 'pointer'
-              }}>
+              <div key={note.id} className="note-item">
                 <span onClick={() => onSelectNote(note)}>
-                  {note.title}
+                  {note.content ? note.content.replace(/<[^>]+>/g, '').slice(0, 30) : 'Untitled Note'}
                 </span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDeleteNote(note.id);
+                    handleDelete(note.id);
                   }}
-                  style={{ marginLeft: '10px' }}
+                  className="delete-note-button"
                 >
-                  &#x1F5D1;
+                  🗑️
                 </button>
               </div>
             ))
