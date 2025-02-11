@@ -33,16 +33,19 @@ function createWindow() {
     show: false,
     frame: false,
     transparent: true,
-    vibrancy: 'under-window',
-    visualEffectState: 'active',
+    vibrancy: "under-window",
+    visualEffectState: "active",
     resizable: false,
     fullscreenable: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  // Hide the window from Cmd+Tab and the Dock (macOS)
+  mainWindow.setSkipTaskbar(true); // ✅ Correct usage
 
   // Hide window when it loses focus
   mainWindow.on('blur', () => {
@@ -125,6 +128,12 @@ app.whenReady().then(() => {
   settings.setDatabase(db);
   createWindow();
   createTray();
+
+
+  // Hide the Dock icon on macOS so the app doesn't appear in Cmd+Tab
+  if (process.platform === 'darwin') {
+    app.dock.hide();
+  }
 });
 
 // Handle IPC events
