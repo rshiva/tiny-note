@@ -3,25 +3,53 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const modules = {
-  toolbar: [
-    [{ header: [1, 2, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ list: "ordered" }],
-    ["link", "image"],
-    ["clean"],
-  ],
-};
+  toolbar: {
+    container: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ color: [] }, { background: [] }], // Added color and background
+      [{ list: "ordered" }],
+      ["link"], //"image"
+      ["clean"],
+    ],
+    handlers: {
+      link: function (value) {
+        const tooltip = this.quill.theme.tooltip;
+        const input = tooltip.root.querySelector("input[data-link]");
+        input.dataset.link = "tinynote link";
+        input.placeholder = "your placeholder text";
 
+        if (value) {
+          const range = this.quill.getSelection();
+          let preview = this.quill.getText(range);
+          if (
+            /^\S+@\S+\.\S+$/.test(preview) &&
+            preview.indexOf("mailto:") !== 0
+          ) {
+            preview = `mailto:${preview}`;
+          }
+          tooltip.edit("link", preview);
+        } else {
+          this.quill.format("link", false);
+        }
+      },
+    },
+  },
+};
 const formats = [
   "header",
   "bold",
+  "link",
+  "color",
   "italic",
   "underline",
   "strike",
   "list",
   "ordered",
-  "link",
-  "image",
+  "blockquote",
+  
+  "background",
+  // "image",
 ];
 
 const RichTextEditor = React.forwardRef(({ value, onChange }, ref) => {
