@@ -189,6 +189,26 @@ ipcMain.handle('backup-to-icloud', async () => {
   }
 });
 
+// Update these handlers to use the DatabaseService methods
+ipcMain.handle('get-last-active-note', async () => {
+  try {
+    return db.getLastActiveNote();
+  } catch (error) {
+    console.error('Error getting last active note:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('set-last-active-note', async (event, noteId) => {
+  try {
+    db.setLastActiveNote(noteId);
+    return true;
+  } catch (error) {
+    console.error('Error setting last active note:', error);
+    return false;
+  }
+});
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

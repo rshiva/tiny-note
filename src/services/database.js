@@ -33,8 +33,16 @@ class DatabaseService {
       )
     `;
 
+    const createAppStateTable = `
+      CREATE TABLE IF NOT EXISTS app_state (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      )
+    `;
+
     this.db.exec(createNotesTable);
     this.db.exec(createSettingsTable);
+    this.db.exec(createAppStateTable);
   }
 
   getAllNotes() {
@@ -99,6 +107,21 @@ class DatabaseService {
 
   saveBackupSettings(backupSettings) {
     return this.saveSetting('iCloudBackup', backupSettings);
+  }
+
+  getLastActiveNote() {
+    const query = 'SELECT value FROM app_state WHERE key = ?';
+    const result = this.db.prepare(query).get('lastActiveNote');
+    return result ? result.value : null;
+  }
+
+  setLastActiveNote(noteId) {
+    const query = `
+      INSERT OR REPLACE INTO app_state (key, value)
+      VALUES (?, ?)
+    `;
+    const stmt = this.db.prepare(query);
+    return stmt.run('lastActiveNote', noteId);
   }
 }
 

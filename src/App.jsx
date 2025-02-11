@@ -39,11 +39,24 @@ function App() {
   useEffect(() => {
     const loadNotes = async () => {
       try {
-        const dbNotes = await window.electronAPI.getAllNotes();
+        const [dbNotes, lastActiveId] = await Promise.all([
+          window.electronAPI.getAllNotes(),
+          window.electronAPI.getLastActiveNote()
+        ]);
+        
         setNotes(dbNotes);
+        
         if (dbNotes.length > 0) {
-          setActiveNoteId(dbNotes[0].id);
-          setNoteContent(dbNotes[0].content);
+          // Try to load the last active note first
+          if (lastActiveId && dbNotes.find(note => note.id === lastActiveId)) {
+            const activeNote = dbNotes.find(note => note.id === lastActiveId);
+            setActiveNoteId(lastActiveId);
+            setNoteContent(activeNote.content);
+          } else {
+            // Fallback to first note if no last active note
+            setActiveNoteId(dbNotes[0].id);
+            setNoteContent(dbNotes[0].content);
+          }
         }
         setIsLoading(false);
       } catch (error) {
@@ -116,11 +129,17 @@ function App() {
     }
   }, [activeNoteId]);
 
-  const switchNote = useCallback((noteId) => {
+  const switchNote = useCallback(async (noteId) => {
     const noteToSwitch = notes.find((note) => note.id === noteId);
     if (noteToSwitch) {
       setActiveNoteId(noteId);
       setNoteContent(noteToSwitch.content);
+      // Save active note to database
+      try {
+        await window.electronAPI.setLastActiveNote(noteId);
+      } catch (error) {
+        console.error('Error saving active note:', error);
+      }
       // Focus editor after switching
       requestAnimationFrame(() => {
         if (editorRef.current?.getEditor) {

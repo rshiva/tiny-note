@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   offShowSettings: (callback) => ipcRenderer.removeListener('show-settings', callback),
   getICloudStatus: () => ipcRenderer.invoke('get-icloud-status'),
   backupToICloud: () => ipcRenderer.invoke('backup-to-icloud'),
+  getLastActiveNote: () => ipcRenderer.invoke('get-last-active-note'),
+  setLastActiveNote: (noteId) => ipcRenderer.invoke('set-last-active-note', noteId),
 }); 
