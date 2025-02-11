@@ -7,6 +7,7 @@ class SettingsService {
     this.settingsPath = path.join(app.getPath('userData'), 'settings.json');
     this.db = null;
     this.loadSettings();
+    this.backupInterval = null;
   }
 
   setDatabase(db) {
@@ -123,6 +124,37 @@ class SettingsService {
       }
     } catch (err) {
       console.error('Backup process error:', err);
+    }
+  }
+
+  startBackupSchedule(frequency = 'daily') {
+    // Clear any existing schedule
+    if (this.backupInterval) {
+      clearInterval(this.backupInterval);
+    }
+
+    // Convert frequency to milliseconds
+    const intervals = {
+      hourly: 60 * 60 * 1000,
+      daily: 24 * 60 * 60 * 1000,
+      weekly: 7 * 24 * 60 * 60 * 1000
+    };
+
+    const interval = intervals[frequency] || intervals.daily;
+
+    this.backupInterval = setInterval(async () => {
+      try {
+        await window.electronAPI.backupToICloud();
+      } catch (error) {
+        console.error('Scheduled backup failed:', error);
+      }
+    }, interval);
+  }
+
+  stopBackupSchedule() {
+    if (this.backupInterval) {
+      clearInterval(this.backupInterval);
+      this.backupInterval = null;
     }
   }
 }

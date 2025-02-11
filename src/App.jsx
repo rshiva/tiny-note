@@ -209,13 +209,19 @@ function App() {
   useEffect(() => {
     const initializeBackups = async () => {
       const iCloudStatus = await window.electronAPI.getICloudStatus();
-      if (iCloudStatus.available) {
-        settings.startBackupSchedule();
+      if (iCloudStatus.available && settings.iCloudBackup?.enabled) {
+        // Schedule backup based on frequency
+        const frequency = settings.iCloudBackup.frequency || 'daily';
+        try {
+          await window.electronAPI.backupToICloud();
+        } catch (error) {
+          console.error('Backup failed:', error);
+        }
       }
     };
     
     initializeBackups();
-  }, []);
+  }, [settings.iCloudBackup]);
 
   const handleSaveSettings = async (newSettings) => {
     try {
