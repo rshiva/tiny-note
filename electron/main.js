@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } = require('electron');
 const path = require('path');
-const isDev = process.env.NODE_ENV !== 'production';
+// const isDev = process.env.NODE_ENV !== 'production';
+const isDev = !app.isPackaged;
 const DatabaseService = require('../src/services/database');
 const SettingsService = require('../src/services/settings');
 const os = require('os');
@@ -50,12 +51,22 @@ function createWindow() {
 
   // Load the index.html from a url if in development
   // or the local file if in production.
+  console.log("isDev--->", isDev, process.env.NODE_ENV);
+  
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173');
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    // Log the path to help debug
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    console.log("isProduct--->", path.join(app.getAppPath(), 'dist', 'index.html'));
+    console.log('Loading from:', indexPath);
+    try {
+      mainWindow.loadFile(indexPath);
+    } catch (error) {
+      console.error('Error loading file:', error);
+    }
   }
 
   return mainWindow;
