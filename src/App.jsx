@@ -150,7 +150,9 @@ function App() {
   }, [notes]);
 
   const deleteNote = useCallback(async (noteId) => {
-    if (!window.confirm('Are you sure you want to delete this note?')) {
+    const confirmDelete = await window.electronAPI.showDeleteConfirmation();
+
+    if (!confirmDelete) {
       return;
     }
 

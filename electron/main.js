@@ -153,6 +153,25 @@ ipcMain.handle('delete-note', async (_, id) => {
   return db.deleteNote(id);
 });
 
+
+const deleteicon = nativeImage.createFromPath(
+  path.join(__dirname, '../assets/tray-icon.png')
+).resize({ width: 48, height: 48 });
+
+ipcMain.handle("show-delete-confirmation", async () => {
+  const response = dialog.showMessageBoxSync({
+    type: "none",
+    icon: deleteicon,
+    title: "Delete Note",
+    message: "Are you sure you want to delete this note?",
+    buttons: ["Cancel", "Delete"],
+    defaultId: 0, // Default to "Cancel"
+    cancelId: 0, // Prevent accidental deletion
+  });
+
+  return response === 1; // If "Delete" is clicked, return true
+});
+
 // Settings IPC handlers
 ipcMain.handle('get-settings', () => {
   return settings.getSettings();
