@@ -108,7 +108,7 @@ function createTray() {
   ]);
 
   tray.setToolTip('Tiny Note');
-  tray.setContextMenu(contextMenu);
+  // tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
     if (mainWindow.isVisible()) {
