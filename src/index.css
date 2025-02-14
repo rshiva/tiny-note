@@ -37,3 +37,8 @@ h1 {
     color: #213547;
   }
 } */
+
+
+.ql-editor ol {
+    padding-left: 0;
+}

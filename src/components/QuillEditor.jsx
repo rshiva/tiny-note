@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const modules = {
   toolbar: {
@@ -8,9 +8,9 @@ const modules = {
       [{ header: [1, 2, false] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
       [{ color: [] }, { background: [] }], // Added color and background
-      [{ list: "ordered" }],
+      [ { list: "bullet" }, { list: "check" }],
       ["link"], //"image"
-      ["clean"],
+      // ["clean"],
     ],
     handlers: {
       link: function (value) {
@@ -45,7 +45,7 @@ const formats = [
   "underline",
   "strike",
   "list",
-  "ordered",
+  // "ordered",
   "blockquote",
   
   "background",

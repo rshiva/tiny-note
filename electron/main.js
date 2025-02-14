@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } = require('electron');
 const path = require('path');
 const isDev = process.env.NODE_ENV !== 'production';
+// const isDev = false //!app.isPackaged;
 const DatabaseService = require('../src/services/database');
 const SettingsService = require('../src/services/settings');
 const os = require('os');
@@ -32,16 +33,19 @@ function createWindow() {
     show: false,
     frame: false,
     transparent: true,
-    vibrancy: 'under-window',
-    visualEffectState: 'active',
+    vibrancy: "under-window",
+    visualEffectState: "active",
     resizable: false,
     fullscreenable: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  // Hide the window from Cmd+Tab and the Dock (macOS)
+  mainWindow.setSkipTaskbar(true); // ✅ Correct usage
 
   // Hide window when it loses focus
   mainWindow.on('blur', () => {
@@ -50,12 +54,22 @@ function createWindow() {
 
   // Load the index.html from a url if in development
   // or the local file if in production.
+  console.log("isDev--->", isDev, process.env.NODE_ENV);
+  
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173');
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    // Log the path to help debug
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    console.log("isProduct--->", path.join(app.getAppPath(), 'dist', 'index.html'));
+    console.log('Loading from:', indexPath);
+    try {
+      mainWindow.loadFile(indexPath);
+    } catch (error) {
+      console.error('Error loading file:', error);
+    }
   }
 
   return mainWindow;
@@ -94,7 +108,7 @@ function createTray() {
   ]);
 
   tray.setToolTip('Tiny Note');
-  tray.setContextMenu(contextMenu);
+  // tray.setContextMenu(contextMenu);
 
   tray.on('click', () => {
     if (mainWindow.isVisible()) {
@@ -114,6 +128,12 @@ app.whenReady().then(() => {
   settings.setDatabase(db);
   createWindow();
   createTray();
+
+
+  // Hide the Dock icon on macOS so the app doesn't appear in Cmd+Tab
+  if (process.platform === 'darwin') {
+    app.dock.hide();
+  }
 });
 
 // Handle IPC events
@@ -131,6 +151,25 @@ ipcMain.handle('update-note', async (_, { id, content, updatedAt }) => {
 
 ipcMain.handle('delete-note', async (_, id) => {
   return db.deleteNote(id);
+});
+
+
+const deleteicon = nativeImage.createFromPath(
+  path.join(__dirname, '../assets/tray-icon.png')
+).resize({ width: 48, height: 48 });
+
+ipcMain.handle("show-delete-confirmation", async () => {
+  const response = dialog.showMessageBoxSync({
+    type: "none",
+    icon: deleteicon,
+    title: "Delete Note",
+    message: "Are you sure you want to delete this note?",
+    buttons: ["Cancel", "Delete"],
+    defaultId: 0, // Default to "Cancel"
+    cancelId: 0, // Prevent accidental deletion
+  });
+
+  return response === 1; // If "Delete" is clicked, return true
 });
 
 // Settings IPC handlers

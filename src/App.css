@@ -22,7 +22,7 @@ html {
   /* Keep font smoothing for better text rendering on Webkit - No change */
   -moz-osx-font-smoothing: grayscale;
   /* Keep font smoothing for better text rendering on Firefox - No change */
-  color: #283740;
+  color: #000000;
   /* Slightly darker text color for body and html for better readability - Changed from #333 to #222 */
   /* Using #222 instead of #333 for a darker shade of grey, closer to black, improving text contrast and readability */
 }
@@ -61,6 +61,7 @@ li {
   list-style: none;
   /* Keep list style reset - No change */
 }
+
 
 a {
   text-decoration: none;
@@ -300,7 +301,7 @@ a {
   /* Keep light border for editor container - No change */
   flex: 1;
   overflow: hidden;
-  padding: 12px;
+  padding: 6px;
 }
 
 
@@ -357,7 +358,7 @@ a {
 .ql-editor {
   flex-grow: 1;
   /* Keep flex grow for ql-editor - No change */
-  padding: 20px 15px 70px 15px;
+  padding: 15px 15px 70px 15px;
   /* ✅ Add extra bottom padding to prevent overlap - No change */
   font-size: 16px;
   /* Keep base font size for editor content - No change */
@@ -428,10 +429,27 @@ a {
 
 .ql-toolbar.ql-snow .ql-formats .ql-header,
 .ql-toolbar.ql-snow .ql-formats .ql-list {
-  margin-right: 15px;
+  /* margin-right: 15px; */
   /* Keep right margin for header/list formats in toolbar - No change */
 }
 
+.ql-snow .ql-picker-label {
+    cursor: pointer;
+    display: inline-block;
+    height: 100%;
+    padding-left: 8px;
+    padding-right: 2px;
+    position: relative;
+    width: 100%;
+}
+
+
+/* text color  */
+.ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+    border-color: #ccc;
+    top: -114px !important;
+    left: -46px;
+}
 .ql-toolbar.ql-snow .ql-formats {
   margin-right: 0;
   /* Keep no right margin for formats in toolbar - No change */
@@ -455,16 +473,16 @@ a {
   /* Keep light top border for fixed toolbar - No change */
   background-color: #f9f9f9;
   /* Keep light background for fixed toolbar - No change */
-  padding: 8px 15px;
+  padding: 8px 4px;
   /* Keep padding for fixed toolbar - No change */
   z-index: 100;
   /* Keep z-index for fixed toolbar - No change */
 }
 
-.ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+/* .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
   border-color: #ccc;
   top: -114px !important;
-}
+} */
 
 
 .search-dropdown {
@@ -713,4 +731,65 @@ a {
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
   }
+}
+
+/* dropdown text/header option to move right */
+#ql-picker-options-3{
+  border-color: #ccc;
+  top: -117px !important;
+  left: -1px;
+}
+
+.ql-editor ol {
+    padding-left: 0;
+}
+
+/* Increase checkbox size */
+/* .ql-editor li[data-list=unchecked] > .ql-ui:before,
+.ql-editor li[data-list=checked] > .ql-ui:before {
+    font-size: 20px;  
+    vertical-align: middle;
+} */
+
+/* Customize unchecked checkbox */
+/* .ql-editor li[data-list=unchecked] > .ql-ui:before {
+    content: "☐"; 
+    color: #333;   
+    font-size: 22px;
+
+} */
+
+/* Customize checked checkbox */
+/* .ql-editor li[data-list=checked] > .ql-ui:before {
+    content: "☑"; 
+    color: #007AFF; 
+    font-weight: bold;
+    font-size: 22px;
+
+} */
+
+
+/* Unchecked checkbox */
+.ql-editor li[data-list=unchecked] > .ql-ui {
+    background-image: url('data:image/svg+xml,<svg width="64px" height="64px" viewBox="-12 -12 48.00 48.00" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_iconCarrier"> <g id="ic_fluent_checkbox_unchecked_24_filled" fill="#212121" fill-rule="nonzero"> <path d="M6,3 L18,3 C19.6568542,3 21,4.34314575 21,6 L21,18 C21,19.6568542 19.6568542,21 18,21 L6,21 C4.34314575,21 3,19.6568542 3,18 L3,6 C3,4.34314575 4.34314575,3 6,3 Z M6,5 C5.44771525,5 5,5.44771525 5,6 L5,18 C5,18.5522847 5.44771525,19 6,19 L18,19 C18.5522847,19 19,18.5522847 19,18 L19,6 C19,5.44771525 18.5522847,5 18,5 L6,5 Z"></path> </g> </g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 20px;  /* Adjust size */
+    height: 20px;
+    display: inline-block;
+    content: ''; /* Required for pseudo-elements */
+}
+
+/* Checked checkbox */
+.ql-editor li[data-list=checked] > .ql-ui {
+    background-image: url('data:image/svg+xml,<svg width="64px" height="64px" viewBox="-12 -12 48.00 48.00" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_iconCarrier"> <g id="ic_fluent_checkbox_checked_24_regular" fill="#212121" fill-rule="nonzero"> <path d="M18.25,3 C19.7687831,3 21,4.23121694 21,5.75 L21,18.25 C21,19.7687831 19.7687831,21 18.25,21 L5.75,21 C4.23121694,21 3,19.7687831 3,18.25 L3,5.75 C3,4.23121694 4.23121694,3 5.75,3 L18.25,3 Z M18.25,4.5 L5.75,4.5 C5.05964406,4.5 4.5,5.05964406 4.5,5.75 L4.5,18.25 C4.5,18.9403559 5.05964406,19 6,19 L18.25,19 C18.9403559,19 19,18.9403559 19,18.25 L19,5.75 C19,5.05964406 18.9403559,4.5 18.25,4.5 Z M10,14.4393398 L16.4696699,7.96966991 C16.7625631,7.6767767 17.2374369,7.6767767 17.5303301,7.96966991 C17.7965966,8.23593648 17.8208027,8.65260016 17.6029482,8.94621165 L17.5303301,9.03033009 L10.5303301,16.0303301 C10.2640635,16.2965966 9.84739984,16.3208027 9.55378835,16.1029482 L9.46966991,16.0303301 L6.46966991,13.0303301 C6.1767767,12.7374369 6.1767767,12.2625631 6.46966991,11.9696699 C6.73593648,11.7034034 7.15260016,11.6791973 7.44621165,11.8970518 L7.53033009,11.9696699 L10,14.4393398 L16.4696699,7.96966991 L10,14.4393398 Z"></path> </g> </g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 20px;  
+    height: 20px;
+    color: #007AFF;
+    display: inline-block;
+    content: ''; /* Required for pseudo-elements */
 }
