@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } = require('electron');
 const path = require('path');
-// const isDev = process.env.NODE_ENV !== 'production';
-const isDev = !app.isPackaged;
+const isDev = process.env.NODE_ENV !== 'production';
+// const isDev = false //!app.isPackaged;
 const DatabaseService = require('../src/services/database');
 const SettingsService = require('../src/services/settings');
 const os = require('os');
